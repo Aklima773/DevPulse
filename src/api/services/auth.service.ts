@@ -7,17 +7,17 @@ class AuthService{
 
         //user->database-return
 
-        const {name,email,age,role,password}= user
+        const {name,email,role,password}= user
 
         const hash = await bcrypt.hash(password, 10);
 
         const res = await sql`
 
-        INSERT INTO users (name,email,passwordhash,age,role)
+        INSERT INTO users (name,email,passwordhash,role)
 
-        VALUES (${name}, ${email}, ${hash}, ${age}, COALESCE(${role}, 'user'))
+        VALUES (${name}, ${email}, ${hash},  COALESCE(${role}, 'user'))
 
-        RETURNING id,name,age,role
+        RETURNING id,name,email,role,created_at,updated_at
         
         `
         return res[0]
@@ -45,7 +45,7 @@ class AuthService{
     async getUserById(id:string){
 
         const res = await sql`
-        SELECT id,name,email,age,role FROM users WHERE id = ${id}`
+        SELECT id,name,email,role FROM users WHERE id = ${id}`
 
         return res[0] as RUser & {id:number}
     }
