@@ -13,9 +13,6 @@ router.get('/refresh', refresh)
 router.get('/me', ()=>{})
 
 
-router.get("/test", auth, authorization("maintainer"),(req,res)=>{
-    res.send("this is super duper sensitive")
-})
 
 router.put('/update/:id', ()=>{})
 router.delete('/delete/:id', ()=>{})

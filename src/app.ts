@@ -3,6 +3,7 @@ import { logger } from './middlewear/logger';
 import { globalErrorHandler } from './middlewear/globalErrorHandler';
 import AuthRouter from './api/routes/auth.route';
 import cookieParser from 'cookie-parser';
+import IssueRouter from './api/routes/issue.route';
 
  const app:Application = express();
 
@@ -17,5 +18,6 @@ app.get('/', (req:Request, res:Response)=>{
 
 
 app.use("/auth", AuthRouter)
+app.use("/api", IssueRouter)
  app.use(globalErrorHandler)
  export default app;
