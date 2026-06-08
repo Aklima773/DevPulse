@@ -16,7 +16,7 @@ export type User ={
 
 export type RUser = Omit<User, 'id' | 'created_at' | 'updated_at' | 'passwordhash'>
 
-export type Issues ={
+export type Issue ={
     id: number;
   title: string;
   description: string;
