@@ -1,5 +1,5 @@
 
-import {type Response } from "express";
+import {type Request, type Response } from "express";
 import issueService from "../services/issueService";
 
 
@@ -26,6 +26,27 @@ export const createIssue = async (req: any, res: Response) => {
       success: true,
       message: "Issue created successfully",
       data: newIssue
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getAllIssues = async (req: Request, res: Response) => {
+  try {
+    const { sort, type, status } = req.query;
+
+   
+    const issues = await issueService.getAllIssues({
+      sort: sort as string,
+      type: type as string,
+      status: status as string,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Issues retrieved successfully",
+      data: issues,
     });
   } catch (error: any) {
     return res.status(500).json({ success: false, message: error.message });

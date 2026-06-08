@@ -3,6 +3,8 @@ import { sql } from "../../db";
 import type { Issue } from "../../types";
 
 class IssueService {
+
+
   async createIssue(data: { title: string; description: string; type: string; reporter_id: number }) {
     const { title, description, type, reporter_id } = data;
 
@@ -14,6 +16,47 @@ class IssueService {
 
     return res[0] as Issue;
   }
+
+
+
+  async getAllIssues(filters: { sort?: string; type?: string; status?: string }) {
+    const { sort = "newest", type, status } = filters;
+
+
+    const typeFilter = type ? sql`AND type = ${type}` : sql``;
+    const statusFilter = status ? sql`AND status = ${status}` : sql``;
+
+  
+    const issues = sort === "oldest"
+      ? await sql`SELECT * FROM issues WHERE 1=1 ${typeFilter} ${statusFilter} ORDER BY created_at ASC`
+      : await sql`SELECT * FROM issues WHERE 1=1 ${typeFilter} ${statusFilter} ORDER BY created_at DESC`;
+
+    if (issues.length === 0) return [];
+
+ 
+    const reporterIds = [...new Set(issues.map((issue) => issue.reporter_id))];
+
+   
+    const reporters = await sql`
+      SELECT id, name, role FROM users WHERE id = ANY(${reporterIds})
+    `;
+
+   
+    const reporterMap = new Map(reporters.map((user) => [user.id, user]));
+
+  
+    return issues.map((issue) => {
+      const { reporter_id, ...issueData } = issue;
+      return {
+        ...issueData,
+        reporter: reporterMap.get(reporter_id) || null,
+      };
+    });
+  }
 }
+
+
+
+
 
 export default new IssueService();

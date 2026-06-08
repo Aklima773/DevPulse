@@ -17,7 +17,7 @@ app.get('/', (req:Request, res:Response)=>{
  })
 
 
-app.use("/auth", AuthRouter)
+app.use("/api/auth", AuthRouter)
 app.use("/api", IssueRouter)
  app.use(globalErrorHandler)
  export default app;
