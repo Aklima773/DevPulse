@@ -16,26 +16,26 @@ export const initDB = async () => {
       id SERIAL PRIMARY KEY,
       name VARCHAR(75) NOT NULL,
       email VARCHAR(255) UNIQUE NOT NULL,
-      passwordHash TEXT NOT NULL,
-      age INT NOT NULL,
-      role VARCHAR(20) NOT NULL DEFAULT 'user',
-      createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
-      updatedAt TIMESTAMP NOT NULL DEFAULT NOW() -- <-- Removed the comma here
+      passwordhash TEXT NOT NULL,
+      role VARCHAR(20) NOT NULL DEFAULT 'contributor',
+      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW() 
     )
   `;
 
-  // 2. Create Orders Table
-  await sql`
-    CREATE TABLE IF NOT EXISTS orders (
-      id SERIAL PRIMARY KEY,                     -- <-- Fixed typo: SECRIAL to SERIAL
-      customerId INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      quantity INT NOT NULL CHECK (quantity > 0),
-      food TEXT NOT NULL,
-      price NUMERIC(10,2) NOT NULL,              -- <-- Fixed typo: NEUMERIC to NUMERIC
-      createdAt TIMESTAMP NOT NULL DEFAULT NOW(),
-      updatedAt TIMESTAMP NOT NULL DEFAULT NOW() -- <-- Removed the comma here
-    )
-  `
+  // 2. Create issues Table
+ await sql`
+  CREATE TABLE IF NOT EXISTS issues (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NOT NULL CHECK (char_length(description) >= 20),
+    type VARCHAR(20) NOT NULL CHECK (type IN ('bug', 'feature_request')),
+    status VARCHAR(20) NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'in_progress', 'resolved')),
+    reporter_id INT NOT NULL, -- Application logic will handle validation; no FK constraint mapping.
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+  );
+`
 
   console.log("Database Connected!")
 };
