@@ -10,7 +10,7 @@ export const verifyToken =(token:string, type: "access" | "refresh") =>{
     return decode as JwtPayload
 };
 
-export const signToken =(payload: RUser & {id:number})=>{
+export const signToken =(payload: RUser & {id:number, name:string, role:string})=>{
 
     //accessToken =>data access
 
@@ -30,4 +30,3 @@ export const signToken =(payload: RUser & {id:number})=>{
 
 };
 
-// console.log(signToken({age:123,email:"hello@gmail.com",name:"test",role:"admin"}));
