@@ -18,7 +18,7 @@ export const signup = async (req:Request, res:Response)=>{
 
 export const login = async (req:Request, res:Response)=>{
 
-    //user er email/password check =>access token,refresh token
+    
 
     const {email,password} = req.body
 
@@ -26,7 +26,7 @@ export const login = async (req:Request, res:Response)=>{
     const user = await authService.validateUser(email,password)
 
     if(!user){
-          sendResponse(res, {message: "Invalid EMail and Password"}, 401)
+          sendResponse(res, {message: "Invalid Email and Password"}, 401)
         return
     }
 
@@ -46,14 +46,14 @@ export const login = async (req:Request, res:Response)=>{
         refreshToken
     }
 
-return sendResponse(res,{message:"User Loged in Successfull!", data: result})
+return sendResponse(res,{message:"Login successful!", data: result},200)
 
 
 }
 
 
 export const refresh = async(req:Request, res:Response)=>{
-    //refresh token ta nite hobe, validate, user, access
+    
 
     const refreshToken = req.cookies ?. refreshToken
     if(!refreshToken){

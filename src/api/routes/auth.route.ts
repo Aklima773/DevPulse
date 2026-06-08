@@ -13,7 +13,7 @@ router.get('/refresh', refresh)
 router.get('/me', ()=>{})
 
 
-router.get("/test", auth, authorization("admin"),(req,res)=>{
+router.get("/test", auth, authorization("maintainer"),(req,res)=>{
     res.send("this is super duper sensitive")
 })
 
