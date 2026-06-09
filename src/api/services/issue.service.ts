@@ -82,7 +82,54 @@ const issue = res[0] as Issue;
       reporter
     };
   }
+
+
+
+
+  async updateIssue(
+  id: number, 
+  userId: number, 
+  userRole: string, 
+  data: { title?: string; description?: string; type?: string }
+) {
+ 
+  const res = await sql`SELECT * FROM issues WHERE id = ${id}`;
+  
+  if (res.length === 0) {
+    throw new Error("NOT_FOUND");
+  }
+  
+  const issue = res[0] as Issue;
+
+
+  if (userRole === "contributor") {
+   
+    if (issue.reporter_id !== userId) {
+      throw new Error("FORBIDDEN_OWNERSHIP");
+    }
+  
+    if (issue.status !== "open") {
+      throw new Error("FORBIDDEN_STATUS");
+    }
+  }
+
+
+  const title = data.title ?? issue.title;
+  const description = data.description ?? issue.description;
+  const type = data.type ?? issue.type;
+
+
+  const updatedRes = await sql`
+    UPDATE issues 
+    SET title = ${title}, description = ${description}, type = ${type}, updated_at = NOW()
+    WHERE id = ${id}
+    RETURNING *
+  `;
+
+  return updatedRes[0] as Issue;
 }
+}
+
 
 
 

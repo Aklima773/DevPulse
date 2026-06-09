@@ -86,3 +86,42 @@ export const getIssueById = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const updateIssue = async (req: any, res: Response) => {
+  try {
+    const issueId = Number(req.params.id);
+    const { title, description, type } = req.body;
+    const currentUser = req.user; // Injected by auth middleware
+
+    if (isNaN(issueId)) {
+      return res.status(400).json({ success: false, message: "Invalid issue ID format" });
+    }
+
+
+    const updatedIssue = await issueService.updateIssue(issueId, currentUser.id, currentUser.role, {
+      title,
+      description,
+      type
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Issue updated successfully",
+      data: updatedIssue
+    });
+
+  } catch (error: any) {
+   
+    if (error.message === "NOT_FOUND") {
+      return res.status(404).json({ success: false, message: "Issue not found" });
+    }
+    if (error.message === "FORBIDDEN_OWNERSHIP") {
+      return res.status(403).json({ success: false, message: "Access denied: You can only update your own issues" });
+    }
+    if (error.message === "FORBIDDEN_STATUS") {
+      return res.status(403).json({ success: false, message: "Access denied: Contributors can only update open issues" });
+    }
+
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
