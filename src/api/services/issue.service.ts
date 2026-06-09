@@ -53,6 +53,35 @@ class IssueService {
       };
     });
   }
+
+
+
+  async getIssueById(id: number) {
+  
+    const res = await sql`
+      SELECT * FROM issues WHERE id = ${id}
+    `;
+
+  
+    if (res.length === 0) return null;
+
+const issue = res[0] as Issue;
+
+
+    const userRes = await sql`
+      SELECT id, name, role FROM users WHERE id = ${issue.reporter_id}
+    `;
+
+    const reporter = userRes.length > 0 ? userRes[0] : null;
+
+  
+    const {reporter_id, ...issueData } = issue;
+    
+    return {
+      ...issueData,
+      reporter
+    };
+  }
 }
 
 
