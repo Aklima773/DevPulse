@@ -125,3 +125,39 @@ export const updateIssue = async (req: any, res: Response) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const deleteIssue = async (req: any, res: Response) => {
+  try {
+    const issueId = Number(req.params.id);
+
+   
+    if (isNaN(issueId)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid issue ID format" 
+      });
+    }
+
+  
+    await issueService.deleteIssue(issueId);
+
+   
+    return res.status(200).json({
+      success: true,
+      message: "Issue deleted successfully"
+    });
+
+  } catch (error: any) {
+    if (error.message === "NOT_FOUND") {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Issue not found" 
+      });
+    }
+
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};

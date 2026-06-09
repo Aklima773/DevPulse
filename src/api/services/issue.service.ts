@@ -128,6 +128,24 @@ const issue = res[0] as Issue;
 
   return updatedRes[0] as Issue;
 }
+
+
+
+async deleteIssue(id: number): Promise<boolean> {
+ 
+  const res = await sql`
+    DELETE FROM issues 
+    WHERE id = ${id}
+    RETURNING id
+  `;
+
+
+  if (res.length === 0) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return true;
+}
 }
 
 

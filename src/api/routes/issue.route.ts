@@ -1,6 +1,6 @@
 // routes/issueRoutes.ts
 import { Router, type Request, type Response } from "express";
-import { createIssue, getAllIssues, getIssueById, updateIssue } from "../controllers/issue.controller";
+import { createIssue, deleteIssue, getAllIssues, getIssueById, updateIssue } from "../controllers/issue.controller";
 import { authorizeRole } from "../../middlewear/roleAuth";
 import { auth } from "../../utils/auth";
 
@@ -25,6 +25,11 @@ router.patch(
   updateIssue
 );
 
-
+router.delete(
+  "/issues/:id",
+  auth,
+  authorizeRole("maintainer"), 
+  deleteIssue
+);
 
 export default router;
