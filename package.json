@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch ./src/index.ts"
+    "start": "node dist/server.js",
+    "dev": "tsx watch ./src/index.ts",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +18,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.9.1",
+    "esbuild-fix-imports-plugin": "^1.0.23",
     "tsx": "^4.22.3"
   },
   "dependencies": {
@@ -24,6 +27,7 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "tsup": "^8.5.1"
   }
 }

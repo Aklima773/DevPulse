@@ -11,9 +11,9 @@ app.use(logger)
 app.use(cookieParser())
 app.use(express.json())
 app.get('/', (req:Request, res:Response)=>{
-  //  throw Error ("Server is dying")
+   throw Error ("Server is dying")
 
-    res.send('hello')
+    res.send('Welcome to DevPulse')
  })
 
 

@@ -1,10 +1,11 @@
 
 import {type Request, type Response } from "express";
 import issueService from "../services/issue.service";
+import { sendResponse } from "../../utils/sendResponse";
 
 
 
-export const createIssue = async (req: any, res: Response) => {
+export const createIssue = async (req: Request, res: Response) => {
     console.log("Logged in user:", req.user);
   try {
     const { title, description, type } = req.body;
@@ -12,7 +13,8 @@ export const createIssue = async (req: any, res: Response) => {
 
 
     if (!title || !description || !type) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
+    
+               return sendResponse(res,{message: "Missing required fields"},400)
     }
 
     const newIssue = await issueService.createIssue({
@@ -22,13 +24,18 @@ export const createIssue = async (req: any, res: Response) => {
       reporter_id
     });
 
-    return res.status(201).json({
-      success: true,
-      message: "Issue created successfully",
-      data: newIssue
-    });
-  } catch (error: any) {
-    return res.status(500).json({ success: false, message: error.message });
+
+    
+return sendResponse(
+      res, 
+      { message: "Issue created successfully", data: newIssue }, 
+      201
+    );
+
+    
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return sendResponse(res, { message: errorMessage }, 500);
   }
 };
 
@@ -43,13 +50,14 @@ export const getAllIssues = async (req: Request, res: Response) => {
       status: status as string,
     });
 
-    return res.status(200).json({
-      success: true,
-      message: "Issues retrieved successfully",
-      data: issues,
-    });
-  } catch (error: any) {
-    return res.status(500).json({ success: false, message: error.message });
+ return sendResponse(
+      res, 
+      { message: "Issues retrieved successfully", data: issues }, 
+      200
+    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return sendResponse(res, { message: errorMessage }, 500);
   }
 };
 
@@ -59,42 +67,34 @@ export const getIssueById = async (req: Request, res: Response) => {
 
 
     if (isNaN(issueId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid issue ID format" 
-      });
+  return sendResponse(res, { message: "Invalid issue ID format" }, 400);
     }
 
     const issue = await issueService.getIssueById(issueId);
 
     if (!issue) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Issue not found" 
-      });
+    return sendResponse(res, { message: "Issue not found" }, 404);
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Issue retrieved successfully",
-      data: issue
-    });
-  } catch (error: any) {
-    return res.status(500).json({ 
-      success: false, 
-      message: error.message 
-    });
+    return sendResponse(
+      res, 
+      { message: "Issue retrieved successfully", data: issue }, 
+      200
+    );
+  }catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+    return sendResponse(res, { message: errorMessage }, 500);
   }
 };
 
-export const updateIssue = async (req: any, res: Response) => {
+export const updateIssue = async (req: Request, res: Response) => {
   try {
     const issueId = Number(req.params.id);
     const { title, description, type } = req.body;
     const currentUser = req.user; // Injected by auth middleware
 
     if (isNaN(issueId)) {
-      return res.status(400).json({ success: false, message: "Invalid issue ID format" });
+      return sendResponse(res, { message: "Invalid issue ID format" }, 400);
     }
 
 
@@ -104,60 +104,49 @@ export const updateIssue = async (req: any, res: Response) => {
       type
     });
 
-    return res.status(200).json({
-      success: true,
-      message: "Issue updated successfully",
-      data: updatedIssue
-    });
-
-  } catch (error: any) {
+    return sendResponse(
+      res, 
+      { message: "Issue updated successfully", data: updatedIssue }, 
+      200
+    );
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : "";
    
-    if (error.message === "NOT_FOUND") {
-      return res.status(404).json({ success: false, message: "Issue not found" });
+    if (msg === "NOT_FOUND") {
+     return sendResponse(res, { message: "Issue not found" }, 404);
     }
-    if (error.message === "FORBIDDEN_OWNERSHIP") {
-      return res.status(403).json({ success: false, message: "Access denied: You can only update your own issues" });
+    if (msg === "FORBIDDEN_OWNERSHIP") {
+      return sendResponse(res, { message: "Access denied: You can only update your own issues" }, 403);
     }
-    if (error.message === "FORBIDDEN_STATUS") {
-      return res.status(403).json({ success: false, message: "Access denied: Contributors can only update open issues" });
+    if (msg === "FORBIDDEN_STATUS") {
+     return sendResponse(res, { message: "Access denied: Contributors can only update open issues" }, 403);
     }
 
-    return res.status(500).json({ success: false, message: error.message });
+return sendResponse(res, { message: msg }, 500);
   }
 };
 
-export const deleteIssue = async (req: any, res: Response) => {
+export const deleteIssue = async (req: Request, res: Response) => {
   try {
     const issueId = Number(req.params.id);
 
    
     if (isNaN(issueId)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid issue ID format" 
-      });
+ return sendResponse(res, { message: "Invalid issue ID format" }, 400);
     }
 
   
     await issueService.deleteIssue(issueId);
 
    
-    return res.status(200).json({
-      success: true,
-      message: "Issue deleted successfully"
-    });
+  return sendResponse(res, { message: "Issue deleted successfully" }, 200);
 
-  } catch (error: any) {
-    if (error.message === "NOT_FOUND") {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Issue not found" 
-      });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : "";
+    if (msg === "NOT_FOUND") {
+      return sendResponse(res, { message: "Issue not found" }, 404);
     }
 
-    return res.status(500).json({ 
-      success: false, 
-      message: error.message 
-    });
+    return sendResponse(res, { message: msg }, 500);
   }
 };

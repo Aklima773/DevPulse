@@ -1,0 +1,12 @@
+import dotenv from 'dotenv';
+import { env } from 'process';
+dotenv.config({ quiet: true });
+const config = {
+    port: env.PORT,
+    database_url: env.DATABASE_URL,
+    node_env: env.NODE_ENV,
+    jwt_secret: env.JWT_SECRET,
+    refresh_secret: env.REFRESH_SECRET
+};
+export default config;
+//# sourceMappingURL=index.js.map

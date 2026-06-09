@@ -1,0 +1,38 @@
+import { sql } from "../../db";
+import bcrypt from 'bcrypt';
+class AuthService {
+    async createUser(user) {
+        //user->database-return
+        const { name, email, role, password } = user;
+        const hash = await bcrypt.hash(password, 10);
+        const res = await sql `
+
+        INSERT INTO users (name,email,passwordhash,role)
+
+        VALUES (${name}, ${email}, ${hash},  COALESCE(${role}, 'user'))
+
+        RETURNING id,name,email,role,created_at,updated_at
+        
+        `;
+        return res[0];
+    }
+    async validateUser(email, password) {
+        const res = await sql `
+        
+        SELECT * FROM users WHERE email =${email}`;
+        // SELECT id,name,email,passwordHash,age, role FROM users WHERE email =${email}`
+        if (!res.length) {
+            return null;
+        }
+        const { passwordhash, ...user } = res[0];
+        const isValid = await bcrypt.compare(password, passwordhash);
+        return isValid ? user : null;
+    }
+    async getUserById(id) {
+        const res = await sql `
+        SELECT id,name,email,role FROM users WHERE id = ${id}`;
+        return res[0];
+    }
+}
+export default new AuthService();
+//# sourceMappingURL=auth.service.js.map
